@@ -1,0 +1,167 @@
+// if (south === null)
+    //   south = world.set(this.x, this.y + 1, Liquid, {amount: 0});
+
+    // if (south === null) {
+    //   this.moveSouth();
+    //   return;
+    // } else
+    if (this.amount > 0) {
+      const south = this.getSouth();
+      if (south instanceof Liquid) {
+        if (south.amount < 255) {
+          const amount = this.amount + south.amount;
+          south.nextAmount = Math.min(amount, 255);
+          this.nextAmount = amount - Math.min(amount, 255);
+          return;
+          // return;
+          // if (!this.amount) {
+          //   this.destroy();
+          //   return;
+          // }
+        }
+      }
+    }
+  
+    // if (this.amount < 255) {
+    //   const north = this.getNorth();
+    //   if (north instanceof Liquid) {
+    //     if (north.amount > 0) {
+    //       const amount = this.amount + north.amount;
+    //       this.nextAmount = Math.min(amount, 255);
+    //       return;
+    //     }
+    //   }
+    // }
+
+    if (this.amount > 0) {
+      let east = this.getEast();
+      let west = this.getWest();
+  
+      // if (east === null)
+      //   east = world.set(this.x + 1, this.y, Liquid, {amount: 0});
+      // if (west === null)
+      //   west = world.set(this.x - 1, this.y, Liquid, {amount: 0});
+  
+      if (east instanceof Liquid) {
+        if (west instanceof Liquid) {
+          // if (east.amount > 0 && west.amount > 0) {
+            if (this.amount !== east.amount || this.amount !== west.amount) {
+              const sum = this.amount + east.amount + west.amount;
+              if (sum === 1) {
+                this.nextAmount = 0;
+                if (Math.random() < .5) {
+                  east.nextAmount = 1;
+                  west.nextAmount = 0;
+                } else {
+                  east.nextAmount = 0;
+                  west.nextAmount = 1;
+                }
+              } else if (sum === 2) {
+                this.nextAmount = 0;
+                east.nextAmount = west.nextAmount = 1;
+              } else {
+                const [portion, remain] = PORTIONS(sum, 3);
+                this.nextAmount = portion + remain;
+                east.nextAmount = west.nextAmount = portion;
+              }
+            }
+          // }
+        } else {
+          const [portion, remain] = PORTIONS(this.amount + east.amount, 2);
+          this.nextAmount = portion + remain;
+          east.nextAmount = portion;
+        }
+      } else {
+        if (west instanceof Liquid) {
+          const [portion, remain] = PORTIONS(this.amount + west.amount, 2);
+          this.nextAmount = portion + remain;
+          west.nextAmount = portion;
+        }
+      }
+    }
+
+    /*
+    if (east) {
+      if (east instanceof Liquid) {
+        if (west) {
+          if (west instanceof Liquid) { // both sides are liquid
+            const [portion, remain] = PORTIONS(this.amount + east.amount + west.amount, 3);
+            this.amount = portion + remain;
+            east.amount = west.amount = portion;
+          } else { // east are liquid, west are block
+            const [portion, remain] = PORTIONS(this.amount + east.amount, 2);
+            this.amount = portion + remain;
+            east.amount = portion;
+          }
+        } else { // east are liquid, west are empty
+          const nwest = world.set(this.x - 1, this.y, Liquid, {});
+          if (nwest) {
+            const [portion, remain] = PORTIONS(this.amount + east.amount, 3);
+            this.amount = portion + remain;
+            east.amount = nwest.amount = portion;
+          } else {
+            const [portion, remain] = PORTIONS(this.amount + east.amount, 2);
+            this.amount = portion + remain;
+            east.amount = portion;
+          }
+        }
+      } else {
+        if (west) {
+          if (west instanceof Liquid) { // east are block, west are liquid
+            const [portion, remain] = PORTIONS(this.amount + west.amount, 2);
+            this.amount = portion + remain;
+            west.amount = portion;
+          } else {} // both sides are block
+        } else { // east are block, west are empty
+          const nwest = world.set(this.x - 1, this.y, Liquid, {});
+          if (nwest) {
+            const [portion, remain] = PORTIONS(this.amount, 2);
+            this.amount = portion + remain;
+            nwest.amount = portion;
+          }
+        }
+      }
+    } else {
+      if (west) {
+        if (west instanceof Liquid) { // east are empty, west are liquid
+          const neast = world.set(this.x + 1, this.y, Liquid, {});
+          if (neast) {
+            const [portion, remain] = PORTIONS(this.amount + west.amount, 3);
+            this.amount = portion + remain;
+            neast.amount = west.amount = portion;
+          } else {
+            const [portion, remain] = PORTIONS(this.amount + west.amount, 2);
+            this.amount = portion + remain;
+            west.amount = portion;
+          }
+        } else { // east are empty, west are block
+          const neast = world.set(this.x + 1, this.y, Liquid, {});
+          if (neast) {
+            const [portion, remain] = PORTIONS(this.amount, 2);
+            this.amount = portion + remain;
+            neast.amount = portion;
+          }
+        }
+      } else { // both sides are empty
+        const nwest = world.set(this.x - 1, this.y, Liquid, {});
+        const neast = world.set(this.x + 1, this.y, Liquid, {});
+
+        if (nwest) {
+          if (neast) {
+            const [portion, remain] = PORTIONS(this.amount, 3);
+            this.amount = portion + remain;
+            neast.amount = nwest.amount = portion;
+          } else {
+            const [portion, remain] = PORTIONS(this.amount, 2);
+            this.amount = portion + remain;
+            nwest.amount = portion;
+          }
+        } else {
+          if (neast) {
+            const [portion, remain] = PORTIONS(this.amount, 2);
+            this.amount = portion + remain;
+            neast.amount = portion;
+          } else {}
+        }
+      }
+    }*/
